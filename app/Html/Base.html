@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{title}}</title>
+    <style>
+        .line-coverage-green {
+            background-color: green;
+            color: white;
+            font-style: inherit;
+        }
+        .line-coverage-red {
+            background-color: red;
+            color: white;
+            font-style: inherit;
+        }
+        .code-block {
+            background: #434343;
+            border: 1px solid #111;
+            border-radius: 3px;
+        }
+        .code-block pre {
+            padding: 30px;
+            color: #f1f1f1;
+            font-size: inherit;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        code {
+            font-size: 100%;
+            counter-increment: line;
+        }
+        code::before {
+            content: counter(line) "| ";
+            display: inline-block;
+            padding-left: auto;
+            margin-left: auto;
+            text-align: right;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="mt-5 mb-5 col-md-12 mx-auto">
+                <div class="mb-3">
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{green-percent}}%" aria-valuenow="{{green-percent}}" aria-valuemin="0" aria-valuemax="100">{{green-percent}}%</div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{red-percent}}%" aria-valuenow="{{red-percent}}" aria-valuemin="0" aria-valuemax="100">{{red-percent}}%</div>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <pre>{{coverage}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
