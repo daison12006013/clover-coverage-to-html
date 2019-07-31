@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Illuminate\Filesystem\Filesystem;
+use Exception;
 
 /**
  * CloverXMl with memory efficient way to load the xml.
@@ -151,40 +152,19 @@ class CloverXml
                 continue;
             }
 
-            foreach ($project as $package) {
-                if ($package->getName() !== 'package') {
-                    continue;
-                }
+            foreach ($project as $packageOrFile) {
+                switch ($packageOrFile->getName()) {
+                    case 'package':
+                        $packageName = (string) $packageOrFile->attributes()['name'];
 
-                $packageName = (string) $package->attributes()['name'];
-
-                foreach ($package as $file) {
-                    if ($file->getName() !== 'file') {
-                        continue;
-                    }
-
-                    $fileName = (string) $file->attributes()['name'];
-
-                    foreach ($file as $line) {
-                        if ($line->getName() !== 'line') {
-                            continue;
+                        foreach ($packageOrFile as $file) {
+                            $this->xmlFile($file, $packageName, $parsed);
                         }
 
-                        $lineAttr = array_first(((array) $line->attributes()));
-
-                        $parsed[$packageName][$fileName][$lineAttr['num']] = $lineAttr;
-                    }
-
-                    if (!isset($parsed[$packageName][$fileName])) {
-                        continue;
-                    }
-
-                    if ($callback = $this->withCallback) {
-                        call_user_func_array($callback, [$packageName, $fileName, $parsed[$packageName][$fileName], $this]);
-
-                        // we need to unset to make it more efficient
-                        unset($parsed[$packageName][$fileName]);
-                    }
+                        break;
+                    case 'file':
+                        $this->xmlFile($packageOrFile, 'default', $parsed);
+                        break;
                 }
             }
         }
@@ -194,5 +174,43 @@ class CloverXml
         }
 
         return $parsed;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $file
+     * @param [type] $packageName
+     * @param [type] $parsed
+     * @return void
+     */
+    protected function xmlFile($file, $packageName, &$parsed)
+    {
+        if ($file->getName() !== 'file') {
+            return;
+        }
+
+        $fileName = (string) $file->attributes()['name'];
+
+        foreach ($file as $line) {
+            if ($line->getName() !== 'line') {
+                continue;
+            }
+
+            $lineAttr = array_first(((array) $line->attributes()));
+
+            $parsed[$packageName][$fileName][$lineAttr['num']] = $lineAttr;
+        }
+
+        if (!isset($parsed[$packageName][$fileName])) {
+            return;
+        }
+
+        if ($callback = $this->withCallback) {
+            call_user_func_array($callback, [$packageName, $fileName, $parsed[$packageName][$fileName], $this]);
+
+            // we need to unset to make it more efficient
+            unset($parsed[$packageName][$fileName]);
+        }
     }
 }
