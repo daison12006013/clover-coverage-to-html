@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/daison12006013/clover-coverage-to-html/master/sample.png">
+
 # Clover XML to HTML
 
 Parses a clover xml and maps the coverage based on the relative path on your local and will calculate and creates a static website that shows the coverage.
@@ -40,6 +42,14 @@ return [
             'catch( |)\((.*)\)',
             '\}( |)else( |)\{',
         ],
+    ],
+    'badges' => [
+        'Repositories' => 'Repositories/', // single
+        'Controllers'  => ['Controllers/Api', 'Controllers/Http'], // grouping
+
+        // or regex sample
+        'User'         => '(.*)User(.*)',
+        'Payment       => ['/Payment', 'Payment(Controller|Repository)'],
     ],
 ];
 ```
