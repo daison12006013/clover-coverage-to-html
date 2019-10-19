@@ -44,12 +44,16 @@ class CreateHtmlCoverage
 
     public function getContent()
     {
-        return strtr(file_get_contents(__DIR__ . '/../Html/Base.html'), [
-            '{{title}}'         => $this->filePath,
-            '{{coverage}}'      => $this->link['content'],
-            '{{green-percent}}' => $this->link['positive'] > 0 ? number_format($this->link['positive'] / ($this->link['positive'] + $this->link['negative']) * 100, 2) : 0,
-            '{{red-percent}}'   => $this->link['negative'] > 0 ? number_format($this->link['negative'] / ($this->link['positive'] + $this->link['negative']) * 100, 2) : 0,
-        ]);
+        ob_start();
+
+        $title        = $this->filePath;
+        $coverage     = $this->link['content'];
+        $greenPercent = $this->link['positive'] > 0 ? number_format($this->link['positive'] / ($this->link['positive'] + $this->link['negative']) * 100, 2) : 0;
+        $redPercent   = $this->link['negative'] > 0 ? number_format($this->link['negative'] / ($this->link['positive'] + $this->link['negative']) * 100, 2) : 0;
+
+        require __DIR__ . '/../Html/Base.php';
+
+        return ob_get_clean();
     }
 
     public function getLink()
