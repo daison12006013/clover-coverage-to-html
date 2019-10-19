@@ -14,7 +14,7 @@ cd clover-to-html
 ## Executing Command
 
 ```
-./clover-coverage-to-html process --xml-path=/path/to/my/clover.xml --store-path=/path/to/my/coverage-html/folder --config-path=clover_to_html.php
+./clover-coverage-to-html process --xml-path=tests/coverage.xml --store-path=reports/coverage --config-path=config.example.php
 ```
 
 ## Example Config
