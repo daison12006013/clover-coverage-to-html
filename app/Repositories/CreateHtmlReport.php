@@ -40,15 +40,20 @@ class CreateHtmlReport
     {
         list($listings, $green, $red) = static::parsePaths($this->paths);
 
-        return strtr(file_get_contents(__DIR__ . '/../Html/Index.html'), [
-            '{{title}}'           => $this->config['title'] ?? 'Code Coverage',
-            '{{contents}}'        => implode("\n", $listings),
-            '{{green-percent}}'   => $green > 0 ? number_format($green / ($green + $red) * 100, 2) : 0,
-            '{{red-percent}}'     => $red > 0 ? number_format($red / ($green + $red) * 100, 2) : 0,
-            '{{number-of-files}}' => count($this->paths),
-            '{{green-lines}}'     => $green,
-            '{{red-lines}}'       => $red,
-        ]);
+        ob_start();
+
+        $title         = $this->config['title'] ?? 'Code Coverage';
+        $badges        = $this->config['badges'] ?? [];
+        $contents      = implode("\n", $listings);
+        $greenPercent  = $green > 0 ? number_format($green / ($green + $red) * 100, 2) : 0;
+        $redPercent    = $red > 0 ? number_format($red / ($green + $red) * 100, 2) : 0;
+        $numberOfFiles = count($this->paths);
+        $greenLines    = $green;
+        $redLines      = $red;
+
+        require __DIR__ . '/../Html/Index.php';
+
+        return ob_get_clean();
     }
 
     /**
@@ -67,13 +72,15 @@ class CreateHtmlReport
             $listings[] = strtr('
         <li class="file-coverage-path">
             <a href="{href}">{path}</a>
-            <span class="badge badge-pill badge-success">{green}%</span>
-            <span class="badge badge-pill badge-danger">{red}%</span>
+            <span data-line="{green-line}" class="badge badge-pill badge-success">{green}%</span>
+            <span data-line="{red-line}" class="badge badge-pill badge-danger">{red}%</span>
         </li>', [
-                '{href}'  => $path,
-                '{path}'  => $path,
-                '{green}' => $attr['positive'] > 0 ? number_format($attr['positive'] / ($attr['positive'] + $attr['negative']) * 100, 2) : 0,
-                '{red}'   => $attr['negative'] > 0 ? number_format($attr['negative'] / ($attr['positive'] + $attr['negative']) * 100, 2) : 0,
+                '{href}'       => $path,
+                '{path}'       => $path,
+                '{green-line}' => $attr['positive'],
+                '{red-line}'   => $attr['negative'],
+                '{green}'      => $attr['positive'] > 0 ? number_format($attr['positive'] / ($attr['positive'] + $attr['negative']) * 100, 2) : 0,
+                '{red}'        => $attr['negative'] > 0 ? number_format($attr['negative'] / ($attr['positive'] + $attr['negative']) * 100, 2) : 0,
             ]);
 
             $greenLines += $attr['positive'];

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{title}}</title>
+    <title><?php echo $title; ?></title>
     <style>
         .line-coverage-green {
             background-color: green;
@@ -48,12 +48,12 @@
             <div class="mt-5 mb-5 col-md-12 mx-auto">
                 <div class="mb-3">
                     <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{green-percent}}%" aria-valuenow="{{green-percent}}" aria-valuemin="0" aria-valuemax="100">{{green-percent}}%</div>
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{red-percent}}%" aria-valuenow="{{red-percent}}" aria-valuemin="0" aria-valuemax="100">{{red-percent}}%</div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $greenPercent; ?>%" aria-valuenow="<?php echo $greenPercent; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $greenPercent; ?>%</div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: <?php echo $redPercent; ?>%" aria-valuenow="<?php echo $redPercent; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $redPercent; ?>%</div>
                     </div>
                 </div>
                 <div class="code-block">
-                    <pre>{{coverage}}</pre>
+                    <pre><?php echo $coverage; ?></pre>
                 </div>
             </div>
         </div>
