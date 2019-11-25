@@ -104,7 +104,7 @@
                                                                     data-toggle="tooltip" data-placement="top" title="<?php echo $fileName ?>"
                                                                 >
                                                                     <?php
-                                                                        echo strlen($fileName) >= 50 ? '...'.substr($fileName, 50) : $fileName;
+                                                                        echo strlen($fileName) >= 50 ? '...'.substr($fileName, -50) : $fileName;
                                                                     ?>
                                                                 </a>
                                                             </div>
