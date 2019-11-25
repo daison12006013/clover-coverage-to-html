@@ -64,7 +64,13 @@ class SampleCalculator
                         ];
                     }
 
-                    $calculated['annotations'][$annoName][$v]['methods'][$methodName] = $methodName;
+                    $calculated['annotations'][$annoName][$v]['methods'][$methodName] = sprintf(
+                        '%s [%s/%s] %s%%',
+                        $methodName,
+                        $calcMethod['positive'],
+                        $calcMethod['negative'],
+                        $calcMethod['percentage']
+                    );
                     $calculated['annotations'][$annoName][$v]['positive'] += $calcMethod['positive'];
                     $calculated['annotations'][$annoName][$v]['negative'] += $calcMethod['negative'];
                     $calculated['annotations'][$annoName][$v]['percentage'] = static::calculatePercetange(
