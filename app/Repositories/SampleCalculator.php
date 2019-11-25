@@ -38,6 +38,7 @@ class SampleCalculator
 
             // per method
             $calculated['methods'][$methodName] = $calcMethod = [
+                'line_at'     => $methodInfo['num'],
                 'positive'    => $positive,
                 'negative'    => $negative,
                 'percentage'  => $percentage,

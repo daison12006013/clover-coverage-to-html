@@ -28,7 +28,11 @@
             padding: 30px;
             color: #f1f1f1;
             font-size: inherit;
-            max-height: 80vh;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .methods {
+            max-height: 90vh;
             overflow-y: auto;
         }
         .div-code {
@@ -48,9 +52,9 @@
             text-align: right;
         }
         .no-border {
-            border: 0px;
+            border: 0;
         }
-        th {
+        th, .methodName {
             text-transform: inherit !important;
         }
     </style>
@@ -68,55 +72,22 @@
     });
     </script>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row mt-5 mb-5">
-            <h4 class="">Statistics</h4>
             <div class="col-12">
+                <h4 class="">Statistics</h4>
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="table">
                         <tr>
                             <td>Overall</td>
                             <td><span class="badge badge-success"><?php echo $calculations['positive']; ?></span></td>
                             <td><span class="badge badge-danger"><?php echo $calculations['negative']; ?></span></td>
                             <td><span class="badge badge-primary"><?php echo $calculations['percentage']; ?>&percnt;</span></td>
                         </tr>
-                        <tr>
-                            <td colspan="4" class="p-0">
-                                <table class="no-border table table-bordered">
-                                    <tr>
-                                        <th colspan="4" class="text-center">Methods</th>
-                                    </tr>
-                                    <?php foreach ($calculations['methods'] as $name => $value): ?>
-                                    <tr>
-                                        <?php if (count($value['annotations'])): ?>
-                                            <td data-toggle="tooltip" data-placement="left" data-html="true" title="<b><u>Annotations</u></b> <ul class='list-unstyled'><?php
-                                                    echo implode('', array_map(function ($val) {
-                                                        return sprintf("<li>%s</li>", trim($val));
-                                                    }, $value['annotations']));
-                                                ?></ul>">
-                                        <?php else: ?>
-                                            <td data-toggle="tooltip" data-placement="left" data-html="true" title="No annotations found!">
-                                        <?php endif ?>
-
-                                            <?php echo $name; ?>
-                                        </td>
-                                        <td><span class="badge badge-success"><?php echo $value['positive']; ?></span></td>
-                                        <td><span class="badge badge-danger"><?php echo $value['negative']; ?></span></td>
-                                        <td><span class="badge badge-primary"><?php echo $value['percentage']; ?>&percnt;</span></td>
-                                    </tr>
-                                    <?php endforeach ?>
-                                </table>
-                            </td>
-                        </tr>
                         <?php if ($calculations['annotations']): ?>
                         <tr>
                             <td colspan="4" class="p-0">
-                                <table class="no-border table table-bordered">
-                                    <tr>
-                                        <th colspan="4" class="text-center">
-                                            Annotations
-                                        </th>
-                                    </tr>
+                                <table class="table table-bordered">
                                     <?php foreach ($calculations['annotations'] as $flag => $values): ?>
                                         <tr>
                                             <th colspan="4" class="text-center">
@@ -130,7 +101,6 @@
                                                         return sprintf("<li>%s</li>", trim($val));
                                                     }, $value['methods']));
                                                 ?></ul>">
-
                                                 <?php echo $name; ?>
                                             </td>
                                             <td><span class="badge badge-success"><?php echo $value['positive']; ?></span></td>
@@ -149,8 +119,8 @@
         </div>
 
         <div class="row mb-5">
-            <h4>Source Code</h4>
             <div class="col-md-12 mx-auto">
+                <h4>Source Code</h4>
                 <div class="mb-3">
                     <div class="progress">
                         <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $calculations['percentage']; ?>%" aria-valuenow="<?php echo $calculations['percentage']; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $calculations['percentage']; ?>%</div>
@@ -158,16 +128,43 @@
                     </div>
                 </div>
 
-                <div class="code-block">
-                    <?php
-                        // transform the content lines to have this kind of template per line
-                        $lineTemplate = '<div class="div-code"><span class="line-tab"></span>%s</div>';
+                <div class="row">
+                    <div class="col-4 methods">
+                        <?php foreach ($calculations['methods'] as $name => $value): ?>
+                            <div class="row">
+                                <?php if (count($value['annotations'])): ?>
+                                    <div class="col-6" data-toggle="tooltip" data-placement="left" data-html="true" title="<b><u>Annotations</u></b> <ul class='list-unstyled'><?php
+                                            echo implode('', array_map(function ($val) {
+                                                return sprintf("<li>%s</li>", trim($val));
+                                            }, $value['annotations']));
+                                        ?></ul>">
+                                <?php else: ?>
+                                    <div class="col-6" data-toggle="tooltip" data-placement="left" data-html="true" title="No annotations found!">
+                                <?php endif ?>
+                                    <a class="methodName btn btn-link" href="#source-code-line-<?php echo $value['line_at']; ?>"><?php echo $name; ?></a>
+                                </div>
+                                <div class="col-1"><span class="badge badge-success"><?php echo $value['positive']; ?></span></div>
+                                <div class="col-1"><span class="badge badge-danger"><?php echo $value['negative']; ?></span></div>
+                                <div class="col-1"><span class="badge badge-primary"><?php echo $value['percentage']; ?>&percnt;</span></div>
+                            </div>
+                        <?php endforeach ?>
+                    </div>
+                    <div class="col-8">
+                        <div class="code-block">
+                            <?php
+                                // transform the content lines to have this kind of template per line
+                                $lineTemplate = '<div class="div-code" id="source-code-line-%s"><span class="line-tab"></span>%s</div>';
 
-                        $content = implode("\n", array_map(function ($val) use ($lineTemplate) {
-                            return sprintf($lineTemplate, $val);
-                        }, explode("\n", $content)));
-                    ?>
-                    <pre><?php echo $content; ?></pre>
+                                $lineNumber = 0;
+                                $content = implode("\n", array_map(function ($val) use ($lineTemplate, &$lineNumber) {
+                                    $lineNumber++;
+
+                                    return sprintf($lineTemplate, $lineNumber, $val);
+                                }, explode("\n", $content)));
+                            ?>
+                            <pre><?php echo $content; ?></pre>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
