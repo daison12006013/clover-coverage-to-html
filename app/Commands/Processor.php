@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Commands;
+namespace Daison\CloverToHtml\Commands;
 
-use Illuminate\Console\Scheduling\Schedule;
-use LaravelZero\Framework\Commands\Command;
-use App\Repositories\CloverXml;
+use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\CloverManager;
+use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use LaravelZero\Framework\Commands\Command;
+use RuntimeException;
 
 class Processor extends Command
 {
@@ -14,14 +16,19 @@ class Processor extends Command
      *
      * @var string
      */
-    protected $signature = 'process {--xml-path=} {--store-path=} {--config-path=}';
+    protected $signature = 'process
+        {--xml-path=}
+        {--store-path=}
+        {--config-path=}
+        {--vendor-autoload= : Provide the vendor/autoload.php}
+    ';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Create an html based on clover xml file';
+    protected $description = 'Create an html report based on clover xml file';
 
     /**
      * Execute the console command.
@@ -30,6 +37,14 @@ class Processor extends Command
      */
     public function handle()
     {
+        try {
+            $this->requireVendorPath();
+        } catch (\Throwable $e) {
+            $this->error('Provide the path of your project vendor/autoload.php!');
+
+            return;
+        }
+
         if (!($xmlPath = $this->getXmlPath())) {
             $this->error('Provide the path of the xml!');
 
@@ -42,14 +57,18 @@ class Processor extends Command
             return;
         }
 
-        if ($configPath = $this->getConfigPath()) {
-            $config = $this->parseConfig($configPath);
-        } else {
-            $config = $this->parseConfig();
+        if (!($config = $this->setupConfig($xmlPath, $storePath))) {
+            $this->error('Provide the path of where the config!');
+
+            return;
         }
 
         try {
-            CloverXml::html($config, $xmlPath, $this->getStorePath());
+            $manager = new CloverManager($xmlPath);
+
+            $manager->setConfig($config);
+
+            $manager->handle();
         } catch (FileNotFoundException $e) {
             $this->error($e->getMessage());
         } catch (\Throwable $e) {
@@ -59,9 +78,44 @@ class Processor extends Command
         $this->info('Successfully created an html!');
     }
 
-    protected function getConfigPath()
+    protected function requireVendorPath()
     {
-        return $this->option('config-path');
+        $path = $this->option('vendor-autoload') ?? getcwd() . '/vendor/autoload.php';
+
+        if (!$path) {
+            throw new Exception('Provide the path of your project vendor/autoload.php!');
+        }
+
+        if (!file_exists($path)) {
+            throw new Exception("Path [$path] to vendor's autoload does not exists!");
+        }
+
+        require $path;
+    }
+
+    protected function setupConfig($xmlPath, $storePath)
+    {
+        $path = $this->option('config-path');
+
+        if (!file_exists($path)) {
+            throw new RuntimeException("Config [$path] not found!");
+        }
+
+        $arr = [];
+
+        if (strpos($path, '.json') !== false) {
+            $arr = json_decode(file_get_contents($path), true);
+        } elseif (strpos($path, '.php') !== false) {
+            $arr = require $path;
+        } else {
+            throw new RuntimeException("Config must be [php or json] format!");
+        }
+
+        $manager = new ConfigManager($arr);
+        $manager->set('xmlPath', $xmlPath);
+        $manager->set('storePath', $storePath);
+
+        return $manager;
     }
 
     protected function getStorePath()
@@ -94,7 +148,7 @@ class Processor extends Command
         }
 
         if (strpos($path, '.php') !== false) {
-            return require($path);
+            return require $path;
         }
 
         throw new \RuntimeException('Config must be a json or php file!');
