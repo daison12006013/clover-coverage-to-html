@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Daison\CloverToHtml\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
