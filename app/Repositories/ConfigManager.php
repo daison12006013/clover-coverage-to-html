@@ -20,6 +20,10 @@ class ConfigManager
 
     public function get($key)
     {
+        if (!isset($this->config[$key])) {
+            return null;
+        }
+
         return $this->config[$key];
     }
 }
