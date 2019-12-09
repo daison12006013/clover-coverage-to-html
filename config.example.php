@@ -1,8 +1,23 @@
 <?php
 
 return [
-    'title'   => 'My Code Coverage',
+    /**
+     * For Annotations Report
+     *
+     * This config will be used to determine classes/methods of which methods
+     * they are belong to.
+     */
+    'annotations' => [
+        'group',
+        'feature',
+        'module',
+    ],
 
+    /**
+     * For Code Coverage
+     *
+     * This config ignores a line, either an exact or regex pattern.
+     */
     'ignores' => [
         /**
          * Each line of code, once we found these kind of value
@@ -27,19 +42,8 @@ return [
          * we shall ignore it.
          */
         'regex' => [
-            // '\($',
-            // '\[$',
             'catch( |)\((.*)\)',
             '\}( |)else( |)\{',
         ],
-    ],
-
-    /**
-     * These configuration will create a badge search for us,
-     * To easily find the common file names
-     */
-    'badges'  => [
-        'Models'      => 'Models/',
-        'Controllers' => ['Controllers/Api/', 'Controllers/Http'],
     ],
 ];

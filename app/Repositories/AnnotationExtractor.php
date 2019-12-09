@@ -13,10 +13,18 @@ class AnnotationExtractor
     {
         $r = new ReflectionClass($classPath);
 
-        $this->annotation = $this->extract($r->getDocComment());
+        $classAnnotations = $this->extract($r->getDocComment());
 
         foreach ($r->getMethods() as $method) {
             $this->methods[$method->getName()] = $this->extract($method->getDocComment());
+        }
+
+        // combine the annotations from the class
+        foreach ($r->getMethods() as $method) {
+            $this->methods[$method->getName()] = array_merge(
+                $this->methods[$method->getName()],
+                $classAnnotations
+            );
         }
     }
 

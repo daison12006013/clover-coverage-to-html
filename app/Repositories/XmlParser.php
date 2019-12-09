@@ -3,10 +3,11 @@
 namespace Daison\CloverToHtml\Repositories;
 
 use Daison\CloverToHtml\Repositories\Contracts\InterpreterContract;
-use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\Traits\ConfigSettler;
 
 class XmlParser implements InterpreterContract
 {
+    use ConfigSettler;
     use MakeableTrait;
 
     protected $interpreter;
@@ -38,13 +39,6 @@ class XmlParser implements InterpreterContract
         }
 
         return $files;
-    }
-
-    public function setConfig(ConfigManager $config)
-    {
-        $this->config = $config;
-
-        return $this;
     }
 
     public function indexFileFinder($arr)
@@ -94,7 +88,11 @@ class XmlParser implements InterpreterContract
             return call_user_func($this->parser, [$interpreter]);
         }
 
-        return new ClassParser($interpreter);
+        $instance = new ClassParser($interpreter);
+
+        $instance->setConfig($this->config);
+
+        return $instance;
     }
 
     public function setInterpreter(Closure $interpreter)
