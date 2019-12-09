@@ -2,10 +2,11 @@
 
 namespace Daison\CloverToHtml\Repositories;
 
-use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\Traits\ConfigSettler;
 
 class SampleHtmlPrinter
 {
+    use ConfigSettler;
     use MakeableTrait;
 
     public function __construct(
@@ -33,12 +34,5 @@ class SampleHtmlPrinter
                 $storePath
             );
         }
-    }
-
-    public function setConfig(ConfigManager $config)
-    {
-        $this->config = $config;
-
-        return $this;
     }
 }

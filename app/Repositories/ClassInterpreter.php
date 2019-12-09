@@ -2,21 +2,16 @@
 
 namespace Daison\CloverToHtml\Repositories;
 
-use Daison\CloverToHtml\ConfigManager;
 use Daison\CloverToHtml\Repositories\Contracts\InterpreterContract;
+use Daison\CloverToHtml\Repositories\Traits\ConfigSettler;
 
 class ClassInterpreter implements InterpreterContract
 {
+    use ConfigSettler;
+
     public function __construct(array $fileArray)
     {
         $this->fileArray = $fileArray;
-    }
-
-    public function setConfig(ConfigManager $config)
-    {
-        $this->config = $config;
-
-        return $this;
     }
 
     public function valid()

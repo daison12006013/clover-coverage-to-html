@@ -2,10 +2,11 @@
 
 namespace Daison\CloverToHtml\Repositories;
 
-use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\Traits\ConfigSettler;
 
 class ParseToHtml
 {
+    use ConfigSettler;
     use MakeableTrait;
 
     public function __construct(array $parsed)
@@ -22,13 +23,6 @@ class ParseToHtml
         }
 
         return $ret;
-    }
-
-    public function setConfig(ConfigManager $config)
-    {
-        $this->config = $config;
-
-        return $this;
     }
 
     public function processColors($parse)

@@ -4,9 +4,12 @@ namespace Daison\CloverToHtml\Repositories;
 
 use Daison\CloverToHtml\Repositories\Contracts\InterpreterContract;
 use Daison\CloverToHtml\Repositories\Contracts\ParserContract;
+use Daison\CloverToHtml\Repositories\Traits\ConfigSettler;
 
 class ClassParser implements ParserContract
 {
+    use ConfigSettler;
+
     protected $interpret;
     protected $methods;
 
@@ -66,7 +69,10 @@ class ClassParser implements ParserContract
 
     protected function appendCalculations()
     {
-        $this->calculations = SampleCalculator::make($this);
+        $calculator = new SampleCalculator($this);
+        $calculator->setConfig($this->config);
+
+        $this->calculations = $calculator->handle();
 
         return $this;
     }

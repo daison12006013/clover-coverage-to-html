@@ -3,9 +3,11 @@
 namespace Daison\CloverToHtml\Repositories;
 
 use Daison\CloverToHtml\Repositories\Contracts\ParserContract;
+use Daison\CloverToHtml\Repositories\Traits\ConfigSettler;
 
 class SampleCalculator
 {
+    use ConfigSettler;
     use MakeableTrait;
 
     const ANNOTATION_GROUP = [
@@ -16,6 +18,15 @@ class SampleCalculator
     public function __construct(ParserContract $parser)
     {
         $this->parser = $parser;
+    }
+
+    protected function getAnnotations()
+    {
+        if (!empty($annotations = $this->config->get('annotations'))) {
+            return $annotations;
+        }
+
+        return static::ANNOTATION_GROUP;
     }
 
     public function handle()
@@ -47,7 +58,7 @@ class SampleCalculator
 
             // per group
             foreach ($methodInfo['annotations'] ?? [] as $annoName => $values) {
-                if (in_array($annoName, static::ANNOTATION_GROUP) === false) {
+                if (in_array($annoName, $this->getAnnotations()) === false) {
                     continue;
                 }
 
