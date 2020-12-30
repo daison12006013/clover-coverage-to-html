@@ -1,6 +1,6 @@
 <?php
 
-namespace Daison\CloverToHtml;
+namespace Daison\CloverToHtml\Repositories;
 
 class ConfigManager
 {
