@@ -2,7 +2,7 @@
 
 namespace Daison\CloverToHtml\Repositories\Traits;
 
-use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\ConfigManager;
 
 trait ConfigSettler
 {
