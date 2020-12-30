@@ -2,7 +2,7 @@
 
 namespace Daison\CloverToHtml\Commands;
 
-use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\ConfigManager;
 use Daison\CloverToHtml\Repositories\CloverManager;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;

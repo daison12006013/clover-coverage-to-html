@@ -5,7 +5,7 @@ namespace Daison\CloverToHtml\Repositories\SampleHtmlPrinter;
 use Daison\CloverToHtml\Repositories\MakeableTrait;
 use Illuminate\Filesystem\Filesystem;
 use Daison\CloverToHtml\Repositories\SampleCalculator;
-use Daison\CloverToHtml\ConfigManager;
+use Daison\CloverToHtml\Repositories\ConfigManager;
 
 class ByIndex
 {
